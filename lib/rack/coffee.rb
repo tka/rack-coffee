@@ -86,7 +86,7 @@ module Rack
       path = Utils.unescape(env["PATH_INFO"])
       return app.call(env) unless own_path?(path)
       return forbidden if path.include?('..')
-      desired_file = root + path.sub(/\.js$/, '.coffee').sub(%r{^/},'')
+      desired_file = Pathname.new( path.sub(/\.js$/, '.coffee').sub(%r{^#{@urls}},root) )
       if concat_to_file == String(desired_file.basename)
         source_files = Pathname.glob("#{desired_file.dirname}/*.coffee")
       elsif desired_file.file?
