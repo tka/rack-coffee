@@ -79,14 +79,19 @@ module Rack
     end
 
     def own_path?(path)
-      path =~ /\.js$/ && urls.any? {|url| path.index(url) == 0}
+      path =~ /\.js$/ && urls.detect {|url| path.index(url) == 0}
     end
 
     def call(env)
       path = Utils.unescape(env["PATH_INFO"])
-      return app.call(env) unless own_path?(path)
+      current_path =  own_path?(path)
+      return app.call(env) unless current_path
       return forbidden if path.include?('..')
-      desired_file = Pathname.new( path.sub(/\.js$/, '.coffee').sub(%r{^#{@urls}},root) )
+      desired_file = Pathname.new( path.sub(/\.js$/, '.coffee').sub(%r{^#{current_path}},root.to_s) )
+      puts path.sub(/\.js$/, '.coffee')
+      puts root.to_s
+      puts current_path
+      puts desired_file
       if concat_to_file == String(desired_file.basename)
         source_files = Pathname.glob("#{desired_file.dirname}/*.coffee")
       elsif desired_file.file?
