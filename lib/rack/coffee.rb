@@ -42,7 +42,7 @@ module Rack
 
     def brew(file)
       if cache_compile_dir
-        cache_file = cache_compile_dir + "#{file.mtime.to_i}_#{file.basename}"
+        cache_file = cache_compile_dir + "#{file.mtime.to_i}_#{file.to_s.gsub(/[^a-z0-9]/i,'_')}"
         if cache_file.file?
           cache_file.read
         else
