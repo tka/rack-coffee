@@ -31,7 +31,10 @@ module Rack
 
     def set_cache_header_opts(given)
       given = [given].flatten.map{|i| String(i) }
-      return if ['false', ''].include?(given.first)
+      if ['false', ''].include?(given.first)
+        @cache_control = "no-cache" 
+        return 
+      end 
       ttl = given.first.to_i > 0 ? given.shift : CACHE_CONTROL_TTL_DEFAULT
       pub = given.first == 'public' ? ', public' : ''
       @cache_control = "max-age=#{ttl}#{pub}"
